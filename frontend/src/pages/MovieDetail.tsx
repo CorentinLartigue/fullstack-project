@@ -17,7 +17,7 @@ function MovieDetail() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+        const apiUrl = import.meta.env.BACKEND_URL || 'http://localhost:3001'
         fetch(`${apiUrl}/api/movies/${id}`)
             .then((response) => {
                 if (!response.ok) throw new Error('Movie not found')
@@ -41,7 +41,7 @@ function MovieDetail() {
             <div className="movie-detail-header">
                 <Link to="/" className="back-link">
                     <FaArrowLeft style={{marginRight: '8px'}} aria-hidden/>
-                    ← Retour à la liste
+                    Retour à la liste
                 </Link>
             </div>
             <h1 className="movie-detail-title">{movie.title}</h1>
@@ -63,7 +63,7 @@ function MovieDetail() {
                 <div className="movie-detail-item">
                     <FaStar className="icon" aria-hidden/>
                     <div>
-                        <span className="movie-detail-label">Note IMDb</span>
+                        <span className="movie-detail-label">Note</span>
                         <span className="movie-detail-rating">{movie.rating}/10</span>
                     </div>
                 </div>

@@ -35,3 +35,13 @@ npm start
 
 - **Port**: 5000, http://localhost:5000
 
+## Tests
+
+## Postman
+- Importer le fichier `postman_crud_users.json` **à la racine de /backend** dans Postman pour tester les endpoints de l'API.
+- Endpoints disponibles:
+  - `GET /users` - Récupérer tous les utilisateurs
+  - `GET /users/:id` - Récupérer un utilisateur par son ID
+  - `POST /users` - Ajouter un nouvel utilisateur
+  - `PUT /users/:id` - Mettre à jour un utilisateur
+  - `DELETE /users/:id` - Supprimer un utilisateur

@@ -1,9 +1,18 @@
 .navbar {
-  padding: 16px 24px;
+  padding: 12px 0;
   border-bottom: 2px solid #e0e0e0;
   margin-bottom: 32px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .navbar-brand {
@@ -11,8 +20,9 @@
   font-weight: 700;
   font-size: 24px;
   color: white;
-  margin-right: 32px;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   transition: transform 0.2s ease;
 }
 
@@ -20,21 +30,44 @@
   transform: scale(1.05);
 }
 
+.brand-icon {
+  font-size: 28px;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 24px;
+}
+
 .navbar-link {
   text-decoration: none;
   color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-  margin-right: 24px;
-  transition: color 0.2s ease;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-icon {
+  font-size: 18px;
+  transition: transform 0.3s ease;
 }
 
 .navbar-link:hover {
   color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-link:hover .nav-icon {
+  transform: translateY(-3px);
 }
 
 .navbar-link.active {
   color: white;
-  border-bottom: 2px solid white;
-  padding-bottom: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

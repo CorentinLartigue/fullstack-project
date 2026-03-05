@@ -40,9 +40,23 @@
 
 .movie-detail-item {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   padding: 16px 0;
   border-bottom: 1px solid #e0e0e0;
+  gap: 16px;
+}
+
+.movie-detail-item .icon {
+  font-size: 20px;
+  color: #667eea;
+  min-width: 24px;
+}
+
+.movie-detail-item > div {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .movie-detail-item:last-child {

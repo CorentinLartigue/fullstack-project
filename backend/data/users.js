@@ -20,11 +20,7 @@ const users = [
         "role": "user",
         "createdAt": "2024-03-10"
     },
-    {
-        "id": 4,
-        "name": "David Wilson",
-        "email": "david@example.com",
-        "role": "admin",
-        "createdAt": "2024-04-05"
-    },
+
 ]
+
+module.exports = users;
