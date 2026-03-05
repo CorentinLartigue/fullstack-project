@@ -18,18 +18,20 @@ Application web fullstack utilisant Express.js pour le backend et React pour le 
 ## Installation
 
 ### Backend
-- **5000**
 ```bash
 cd backend
-npm install express cors
-node server.js
+npm install
+npm start
 ```
-### Frontend
-- **3000**
 
+- **Port**: 3001, http://localhost:3001
+
+### Frontend
 ```bash
 cd frontend
-npm install react react-dom typescript
-npm run dev
+npm install
+npm start
 ```
+
+- **Port**: 5000, http://localhost:5000
 
