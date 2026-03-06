@@ -1,39 +1,36 @@
-const users = require('../data/users');
+const mongoose = require('mongoose');
 
-const userModel = {
-    getAll: () => {
-        return users;
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Le nom est obligatoire'],
+        trim: true
     },
-    getById: (id) => {
-        return users.find(user => user.id === id);
+    email: {
+        type: String,
+        required: [true, "L'email est obligatoire"],
+        unique: true,
+        lowercase: true,
+        trim: true
     },
-    create: (data) => {
-        const newUser = {
-            id: users.length + 1,
-            ...data,
-            createdAt: new Date().toISOString().split('T')[0]
-        };
-        users.push(newUser);
-        return newUser;
+    role: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user'
     },
-    update: (id, data) => {
-        const userIndex = users.findIndex(user => user.id === id);
-        if (userIndex === -1) return null;
-        
-        const {name, email, role} = data;
-        
-        if (name !== undefined) users[userIndex].name = name;
-        if (email !== undefined) users[userIndex].email = email;
-        if (role !== undefined) users[userIndex].role = role;
-
-        return users[userIndex];
-    },
-    remove: (id) => {
-        const userIndex = users.findIndex(user => user.id === id);
-        if (userIndex === -1) return null;
-        const deletedUser = users.splice(userIndex, 1);
-        return deletedUser[0];
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
-};
+}, {
+    toJSON: {
+        virtuals: true,
+        versionKey: false,
+        transform: (doc, ret) => {
+            ret.id = ret._id;
+            delete ret._id;
+        }
+    }
+});
 
-module.exports = userModel;
+module.exports = mongoose.model('User', userSchema);

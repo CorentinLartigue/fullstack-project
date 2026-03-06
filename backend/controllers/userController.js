@@ -1,59 +1,151 @@
-const userModel = require('../models/userModel');
+const mongoose = require('mongoose');
+const User = require('../models/userModel');
 
 const userController = {
-    getAllUsers: (req, res) => {
+    // GET /api/users
+    getAllUsers: async (req, res) => {
         try {
-            const users = userModel.getAll();
-            const count = Array.isArray(users) ? users.length : 0;
-            if (count === 0) return res.status(404).json({success: false, count, message: 'Aucun utilisateur existant'});
-            res.status(200).json({success: true, count, data: users});
+            const filter = {};
+            if (req.query.role) {
+                filter.role = req.query.role;
+            }
+
+            const users = await User.find(filter);
+            const count = users.length;
+            
+            if (count === 0) {
+                return res.status(404).json({
+                    success: false, 
+                    count, 
+                    message: 'Aucun utilisateur existant'
+                });
+            }
+
+            res.status(200).json({
+                success: true, 
+                count, 
+                data: users
+            });
         } catch (err) {
-            res.status(500).json({error: 'Erreur serveur'});
+            res.status(500).json({ error: 'Erreur serveur', message: err.message });
         }
     },
 
-    getUserById: (req, res) => {
+    // GET /api/users/:id
+    getUserById: async (req, res) => {
         try {
-            const id = Number(req.params.id);
-            const user = userModel.getById(id);
-            if (!user) return res.status(404).json({success: false, message: 'Utilisateur non trouvé'});
+            const { id } = req.params;
+
+            if (!mongoose.isValidObjectId(id)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Format ID invalide' 
+                });
+            }
+
+            const user = await User.findById(id);
+            
+            if (!user) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Utilisateur non trouvé' 
+                });
+            }
+
             res.json(user);
         } catch (err) {
-            res.status(500).json({error: 'Erreur serveur'});
+            res.status(500).json({ error: 'Erreur serveur', message: err.message });
         }
     },
 
-    createUser: (req, res) => {
+    // POST /api/users
+    createUser: async (req, res) => {
         try {
-            const {name, email, role} = req.body;
-            if (!name || !email || !role) return res.status(400).json({success: false, message: 'Champs manquants'});
-            const newUser = userModel.create({name, email, role});
-            res.status(201).json({success: true, data: newUser});
+            const { name, email, role } = req.body;
+            
+            if (!name || !email) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Champs name et email obligatoires' 
+                });
+            }
+            
+            const newUser = await User.create({ name, email, role });
+            res.status(201).json({ success: true, data: newUser });
         } catch (err) {
-            res.status(500).json({error: 'Erreur serveur'});
+            if (err.code === 11000) {
+                return res.status(409).json({ 
+                    success: false, 
+                    message: 'Email déjà utilisé' 
+                });
+            }
+            res.status(500).json({ error: 'Erreur serveur', message: err.message });
         }
     },
 
-    updateUser: (req, res) => {
+    // PUT /api/users/:id
+    updateUser: async (req, res) => {
         try {
-            const id = Number(req.params.id);
-            const {name, email, role} = req.body;
-            const updatedUser = userModel.update(id, {name, email, role});
-            if (!updatedUser) return res.status(404).json({success: false, message: 'Utilisateur non trouvé'});
-            res.json({success: true, data: updatedUser});
+            const { id } = req.params;
+
+            if (!mongoose.isValidObjectId(id)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Format ID invalide' 
+                });
+            }
+
+            const { _id, createdAt, ...updateData } = req.body;
+
+            const updatedUser = await User.findByIdAndUpdate(
+                id, 
+                updateData, 
+                { new: true, runValidators: true }
+            );
+            
+            if (!updatedUser) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Utilisateur non trouvé' 
+                });
+            }
+
+            res.json({ success: true, data: updatedUser });
         } catch (err) {
-            res.status(500).json({error: 'Erreur serveur'});
+            if (err.code === 11000) {
+                return res.status(409).json({ 
+                    success: false, 
+                    message: 'Email déjà utilisé' 
+                });
+            }
+            res.status(500).json({ error: 'Erreur serveur', message: err.message });
         }
     },
 
-    deleteUser: (req, res) => {
+    // DELETE /api/users/:id
+    deleteUser: async (req, res) => {
         try {
-            const id = Number(req.params.id);
-            const deletedUser = userModel.remove(id);
-            if (!deletedUser) return res.status(404).json({success: false, message: 'Utilisateur non trouvé'});
+            const { id } = req.params;
+
+            if (!mongoose.isValidObjectId(id)) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Format ID invalide' 
+                });
+            }
+
+            const deletedUser = await User.findByIdAndDelete(id);
+            
+            if (!deletedUser) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Utilisateur non trouvé' 
+                });
+            }
+
             res.status(204).json();
         } catch (err) {
-            res.status(500).json({error: 'Erreur serveur'});
+            res.status(500).json({ error: 'Erreur serveur', message: err.message });
         }
     }
 };
