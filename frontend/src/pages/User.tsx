@@ -1,60 +1,77 @@
-import {useEffect, useState} from 'react'
-import {Link} from 'react-router-dom'
-import {FaUser, FaIdBadge} from 'react-icons/fa'
+import { useEffect, useState } from 'react';
+import { useOutletContext, Link } from 'react-router-dom';
+import { FaPlus } from 'react-icons/fa';
+import userService from '../services/userService';
+import type { User } from '../services/userService';
+import UserList from '../components/UserList';
 
-interface User {
-    id: number
-    name: string
-    email: string
-    role: string
-    createdAt: string
+interface ContextType {
+  setUsersCount: (count: number) => void;
 }
 
-function User() {
-    const [users, setUsers] = useState<User[]>([])
-    const [loading, setLoading] = useState(true)
+function UserPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { setUsersCount } = useOutletContext<ContextType>();
 
-    useEffect(() => {
-        const apiUrl = import.meta.env.BACKEND_URL || 'http://localhost:3001'
-        fetch(`${apiUrl}/api/users`)
-            .then(response => response.json())
-            .then(res => {
-                if (res.success && Array.isArray(res.data)) {
-                    setUsers(res.data)
-                } else if (Array.isArray(res)) {
-                    setUsers(res)
-                }
-                setLoading(false)
-            })
-            .catch(err => {
-                console.error("Erreur chargement users:", err)
-                setLoading(false)
-            })
-    }, [])
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-    if (loading) return <div className="loading">Chargement des utilisateurs...</div>
+  useEffect(() => {
+    setUsersCount(users.length);
+  }, [users, setUsersCount]);
 
-    return (
-        <div className="movies-container">
-            <h1 className="movies-title">Utilisateurs</h1>
-            <div className="movies-grid">
-                {users.map((user) => (
-                    <div key={user.id} className="movie-card">
-                        <Link to={`/users/${user.id}`} className="movie-link">
-                            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                                <FaUser />
-                                <span>{user.name}</span>
-                            </div>
-                            <div style={{fontSize: '0.8em', color: '#666', marginTop: '5px'}}>
-                                <FaIdBadge style={{marginRight: '5px'}}/>
-                                {user.role}
-                            </div>
-                        </Link>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await userService.getAll();
+      const data = response.data;
+      const userList: User[] = (data as any).data || data;
+      if (Array.isArray(userList)) {
+        setUsers(userList);
+      }
+      setError(null);
+    } catch (err: any) {
+      setError('Erreur lors du chargement des utilisateurs.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      try {
+        await userService.remove(id);
+        setUsers(prev => prev.filter(user => user.id !== id));
+      } catch (err) {
+        alert('Erreur lors de la suppression.');
+      }
+    }
+  };
+
+  return (
+    <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <Link
+          to="/users/new" 
+          className="btn-submit" 
+          style={{ textDecoration: 'none', padding: '10px 20px', marginTop: 0 }}
+        >
+          <FaPlus /> Ajouter un utilisateur
+        </Link>
+      </div>
+      
+      <UserList 
+        users={users} 
+        loading={loading} 
+        error={error} 
+        onDelete={handleDelete} 
+      />
+    </div>
+  );
 }
 
-export default User
+export default UserPage;

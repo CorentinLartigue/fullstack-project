@@ -1,7 +1,8 @@
-import {useEffect, useState} from 'react'
-import {useParams, Link} from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import '../css/MovieDetail.css'
-import {FaArrowLeft, FaCalendarAlt, FaFilm, FaStar} from 'react-icons/fa'
+import { FaArrowLeft, FaCalendarAlt, FaFilm, FaStar } from 'react-icons/fa'
+import movieService from '../services/movieService'
 
 interface Movie {
     id: number
@@ -12,29 +13,27 @@ interface Movie {
 }
 
 function MovieDetail() {
-    const {id} = useParams<{ id: string }>()
+    const { id } = useParams<{ id: string }>()
     const [movie, setMovie] = useState<Movie | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const apiUrl = import.meta.env.BACKEND_URL || 'http://localhost:3001'
-        fetch(`${apiUrl}/api/movies/${id}`)
+        if (!id) return;
+
+        movieService.getById(id)
             .then((response) => {
-                if (!response.ok) throw new Error('Movie not found')
-                return response.json()
+                setMovie(response.data);
+                setLoading(false);
             })
-            .then((data) => {
-                setMovie(data)
-                setLoading(false)
-            })
-            .catch(() => {
-                setMovie(null)
-                setLoading(false)
-            })
+            .catch((err) => {
+                console.error("Erreur lors de la récupération du film:", err);
+                setMovie(null);
+                setLoading(false);
+            });
     }, [id])
 
     if (loading) return <div className="loading">Chargement...</div>
-    if (!movie) return <div className="error">Film non trouve</div>
+    if (!movie) return <div className="error">Film non trouvé</div>
 
     return (
         <div className="movie-detail">

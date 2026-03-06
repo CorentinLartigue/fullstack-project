@@ -1,0 +1,29 @@
+.user-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 24px 0;
+}
+
+.user-list-status {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #718096;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+  margin: 24px 0;
+}
+
+.user-list-status.error {
+  color: #e53e3e;
+  background: #fff5f5;
+  border-color: #fed7d7;
+}
+
+@media (max-width: 640px) {
+  .user-list-grid {
+    grid-template-columns: 1fr;
+  }
+}

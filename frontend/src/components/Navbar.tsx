@@ -3,12 +3,16 @@ import { FaUser } from 'react-icons/fa'
 import { BsCameraReelsFill } from "react-icons/bs";
 import '../css/Navbar.css'
 
-export default function Navbar() {
+interface NavbarProps {
+    count: number;
+}
+
+export default function Navbar({ count }: NavbarProps) {
     return (
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-brand">
-                    <span>Movie App</span>
+                    <span>Application Fullstack</span>
                 </Link>
                 <div className="navbar-menu">
                     <NavLink
@@ -23,7 +27,7 @@ export default function Navbar() {
                         className={({ isActive }) => isActive ? 'navbar-link active' : 'navbar-link'}
                     >
                         <FaUser className="nav-icon" />
-                        <span>Profil</span>
+                        <span>Users ({count})</span>
                     </NavLink>
                 </div>
             </div>

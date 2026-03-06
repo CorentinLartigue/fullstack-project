@@ -1,39 +1,29 @@
-import {useEffect, useState} from 'react'
-import {useParams, Link} from 'react-router-dom'
-import {FaArrowLeft, FaEnvelope, FaIdBadge, FaCalendarAlt} from 'react-icons/fa'
-
-interface User {
-    id: number
-    name: string
-    email: string
-    role: string
-    createdAt: string
-}
+import { useEffect, useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { FaArrowLeft, FaEnvelope, FaIdBadge, FaCalendarAlt } from 'react-icons/fa'
+import userService from '../services/userService'
+import type { User } from '../services/userService'
 
 function UserDetail() {
-    const {id} = useParams<{ id: string }>()
+    const { id } = useParams<{ id: string }>()
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const apiUrl = import.meta.env.BACKEND_URL || 'http://localhost:3001'
-        fetch(`${apiUrl}/api/users/${id}`)
+        if (!id) return;
+        
+        userService.getById(id)
             .then((response) => {
-                if (!response.ok) throw new Error('User not found')
-                return response.json()
+                const data = response.data;
+                const userData: User = (data as any).data || data;
+                setUser(userData);
+                setLoading(false);
             })
-            .then((data) => {
-                if (data.success && data.data) {
-                    setUser(data.data)
-                } else {
-                    setUser(data)
-                }
-                setLoading(false)
-            })
-            .catch(() => {
-                setUser(null)
-                setLoading(false)
-            })
+            .catch((err) => {
+                console.error("Erreur lors de la récupération de l'utilisateur:", err);
+                setUser(null);
+                setLoading(false);
+            });
     }, [id])
 
     if (loading) return <div className="loading">Chargement de l'utilisateur...</div>
